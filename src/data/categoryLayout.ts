@@ -34,13 +34,13 @@ const generateTwoRowLayout = (): CategoryLayout[] => {
       slug,
       x: `${xPercent}%`,
       y: yPercent,
-      zIndex: isActive ? 5 + i : 1,
-      rotation: isActive ? (i % 2 === 0 ? -6 : 6) : 0, // Slight alternating tilt
-      scale: isActive ? 0.8 : 0.6, // Smaller to fit better
+      zIndex: isActive ? 5 + i : 3,
+      rotation: isActive ? (i % 2 === 0 ? -6 : 6) : (i % 2 === 0 ? -3 : 3), // Hafif eğim
+      scale: isActive ? 0.8 : 0.65, // Biraz daha büyük
       defaultPath: '',
       hoveredPath: '',
-      defaultColor: isActive ? '#0B0B0B' : '#D0D0D0',
-      hoverColor: isActive ? '#B0121B' : '#A0A0A0',
+      defaultColor: isActive ? '#0B0B0B' : '#888888', // Daha koyu gri
+      hoverColor: isActive ? '#B0121B' : '#666666', // Hover'da biraz daha koyu
       isActive
     });
   }

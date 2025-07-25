@@ -13,9 +13,7 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({ layout, title, onCategorySe
 
   const handleMouseEnter = () => {
     setShowTooltip(true);
-    if (layout.isActive) {
-      setIsHovered(true);
-    }
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
@@ -100,7 +98,7 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({ layout, title, onCategorySe
           className={`font-serif font-bold transition-all duration-600 select-none ${
             layout.isActive 
               ? 'text-cartier-black hover:text-cartier-red' 
-              : 'text-gray-300'
+              : 'text-gray-500 hover:text-gray-400'
           }`}
           style={{ 
             fontSize: 'clamp(48px, 12vw, 180px)',
@@ -117,7 +115,7 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({ layout, title, onCategorySe
               `
               : 'contrast(0.8) brightness(1.2)',
             transition: 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
-            opacity: layout.isActive ? 1 : 0.4,
+            opacity: layout.isActive ? 1 : 0.7,
           }}
         >
           {numeral}

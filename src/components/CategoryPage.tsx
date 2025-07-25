@@ -8,34 +8,58 @@ import PromptCard from './PromptCard';
 
 interface CategoryPageProps {
   category: Category;
+  selectedCategorySlug: string | null;
   onPromptCopy: () => void;
   onBack: () => void;
 }
 
 type EnhancedPromptItem = Prompt | { type: 'quote'; quote: Quote; id: string };
 
-const CategoryPage: React.FC<CategoryPageProps> = ({ category, onPromptCopy, onBack }) => {
+const CategoryPage: React.FC<CategoryPageProps> = ({ category, selectedCategorySlug, onPromptCopy, onBack }) => {
   const categoryPrompts = prompts.filter(prompt => prompt.category === category.slug);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const numeral = romanNumerals[category.slug as keyof typeof romanNumerals];
   
-  // Create warped background SVG
-  const createWarpedNumeralSVG = () => {
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
-      <svg width="800" height="800" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="warp">
-            <feTurbulence baseFrequency="0.02" numOctaves="3" result="noise"/>
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2"/>
-          </filter>
-        </defs>
-        <text x="50" y="55" text-anchor="middle" dominant-baseline="middle" 
-              font-family="serif" font-size="60" font-weight="bold" 
-              fill="#0B0B0B" opacity="0.05" filter="url(#warp)">
-          ${numeral}
-        </text>
-      </svg>
-    `)}`;
+  // Page transition animations
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      scale: 0.95,
+    },
+    in: {
+      opacity: 1,
+      scale: 1,
+    },
+    out: {
+      opacity: 0,
+      scale: 1.05,
+    }
+  };
+
+  const pageTransition = {
+    type: 'tween' as const,
+    ease: 'anticipate' as const,
+    duration: 0.6
+  };
+
+  // Hero numeral animation
+  const heroVariants = {
+    initial: {
+      scale: 0.5,
+      opacity: 0,
+      y: -50,
+    },
+    animate: {
+      scale: 1,
+      opacity: 1,
+      y: 0,
+    }
+  };
+
+  const heroTransition = {
+    duration: 0.8,
+    ease: [0.6, -0.05, 0.01, 0.99] as const,
+    delay: 0.2
   };
 
   useEffect(() => {
@@ -95,21 +119,34 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category, onPromptCopy, onB
   return (
     <motion.div
       className="min-h-screen bg-cartier-ivory relative overflow-hidden"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      style={{
-        backgroundImage: `url("${createWarpedNumeralSVG()}")`,
-        backgroundPosition: 'center center',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: '80vh',
-        backgroundAttachment: 'fixed'
-      }}
+      variants={pageVariants}
+      initial="initial"
+      animate="in"
+      exit="out"
+      transition={pageTransition}
     >
+      {/* Hero Roman Numeral - Large and Prominent */}
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none z-5"
+        variants={heroVariants}
+        initial="initial"
+        animate="animate"
+        transition={heroTransition}
+      >
+        <div className="text-[40vh] font-serif font-bold text-cartier-black/8 select-none">
+          {numeral}
+        </div>
+      </motion.div>
+
       <div className="relative z-10 p-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="mb-16">
+          <motion.div 
+            className="mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             <button
               onClick={onBack}
               className="mb-8 flex items-center space-x-3 text-cartier-black hover:text-cartier-red transition-all duration-300 group"
@@ -135,7 +172,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category, onPromptCopy, onB
               className="flex items-center space-x-4 mb-6"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
             >
               <div className="w-12 h-12 bg-cartier-black flex items-center justify-center">
                 <span className="font-serif text-cartier-ivory text-lg font-bold">
@@ -151,14 +188,19 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category, onPromptCopy, onB
               className="text-cartier-black/60 font-sans text-sm uppercase tracking-wider max-w-xl"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
             >
               Hover • Copy • Explore the depths
             </motion.p>
-          </div>
+          </motion.div>
 
           {/* Enhanced Prompts List */}
-          <div className="space-y-6">
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+          >
             {enhancedPrompts.map((item, index) => {
               if ('type' in item && item.type === 'quote') {
                 // Easter egg quote
@@ -197,14 +239,14 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category, onPromptCopy, onB
                 );
               }
             })}
-          </div>
+          </motion.div>
 
           {/* Footer */}
           <motion.div
             className="mt-20 text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
           >
             <div className="w-24 h-0.5 bg-cartier-red mx-auto mb-6"></div>
             <p className="text-cartier-black/40 font-serif text-xs uppercase tracking-wider mb-2">

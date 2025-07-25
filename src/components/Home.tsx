@@ -9,8 +9,37 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
+  // Page transition animations
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      scale: 0.95,
+    },
+    in: {
+      opacity: 1,
+      scale: 1,
+    },
+    out: {
+      opacity: 0,
+      scale: 1.05,
+    }
+  };
+
+  const pageTransition = {
+    type: 'tween' as const,
+    ease: 'anticipate' as const,
+    duration: 0.6
+  };
+
   return (
-    <div className="min-h-screen bg-cartier-ivory overflow-hidden">
+    <motion.div 
+      className="min-h-screen bg-cartier-ivory overflow-hidden"
+      variants={pageVariants}
+      initial="initial"
+      animate="in"
+      exit="out"
+      transition={pageTransition}
+    >
       {/* Hero Section */}
       <div className="relative max-w-6xl mx-auto px-6 pt-8 pb-4 text-center z-50">
         <motion.h1
@@ -19,7 +48,7 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          Prompt Explorer
+          Dial Of Prompts
         </motion.h1>
         
         <motion.p
@@ -47,7 +76,7 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
                   opacity: 0
                 }}
                 animate={{ 
-                  opacity: layout.isActive ? 1 : 0.4
+                  opacity: layout.isActive ? 1 : 0.7
                 }}
                 transition={{ 
                   duration: 0.6, 
@@ -114,7 +143,7 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
           Ultra-minimal prompt exploration
         </p>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
