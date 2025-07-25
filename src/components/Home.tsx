@@ -12,9 +12,9 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
   return (
     <div className="min-h-screen bg-cartier-ivory overflow-hidden">
       {/* Hero Section */}
-      <div className="relative max-w-6xl mx-auto px-6 py-12 text-center z-50">
+      <div className="relative max-w-6xl mx-auto px-6 py-6 text-center z-50">
         <motion.h1
-          className="font-serif text-4xl md:text-5xl text-cartier-black mb-4 uppercase"
+          className="font-serif text-4xl md:text-5xl text-cartier-black mb-3 uppercase"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -23,7 +23,7 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
         </motion.h1>
         
         <motion.p
-          className="text-cartier-black/60 font-sans text-xs uppercase tracking-widest max-w-sm mx-auto mb-6"
+          className="text-cartier-black/60 font-sans text-xs uppercase tracking-widest max-w-sm mx-auto mb-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
@@ -33,7 +33,7 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
       </div>
 
       {/* Irregular Grid of Category Icons */}
-      <div className="relative w-full h-screen px-4">
+      <div className="relative w-full h-[80vh] px-4 -mt-8">
         {/* Central crash point - more visible */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
           <div className="w-2 h-2 bg-cartier-red opacity-30 rounded-full animate-pulse"></div>
@@ -41,40 +41,40 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 border border-cartier-red opacity-5 rounded-full"></div>
         </div>
         
-        {/* Desktop: Irregular absolute positioning */}
+        {/* Desktop: Spiral positioning */}
         <div className="hidden sm:block relative w-full h-full">
           {categoryLayouts.map((layout, index) => {
             const category = categories.find(cat => cat.slug === layout.slug);
-            if (!category) return null;
+            const title = category?.title || 'Coming Soon';
             
             return (
               <motion.div
                 key={layout.slug}
                 initial={{ 
                   opacity: 0, 
-                  scale: 0.3, 
-                  rotate: 0,
+                  scale: 0.2, 
+                  rotate: layout.spiralAngle - 180,
                   x: '50%',
                   y: '50%'
                 }}
                 animate={{ 
-                  opacity: 1, 
+                  opacity: layout.isActive ? 1 : 0.3, 
                   scale: 1, 
-                  rotate: layout.rotation,
+                  rotate: 0,
                   x: '0%',
                   y: '0%'
                 }}
                 transition={{ 
-                  duration: 1.2, 
-                  delay: 0.8 + (index * 0.12),
+                  duration: 1.5, 
+                  delay: 0.8 + (index * 0.08),
                   ease: [0.19, 1, 0.22, 1],
                   type: "spring",
-                  damping: 12
+                  damping: layout.isActive ? 12 : 20
                 }}
               >
                 <CategoryIcon
                   layout={layout}
-                  title={category.title}
+                  title={title}
                   onCategorySelect={onCategorySelect}
                 />
               </motion.div>
@@ -82,9 +82,9 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
           })}
         </div>
 
-        {/* Mobile: Vertical stack */}
-        <div className="sm:hidden flex flex-col items-center space-y-12 py-8">
-          {categoryLayouts.map((layout, index) => {
+        {/* Mobile: Vertical stack - only active categories */}
+        <div className="sm:hidden flex flex-col items-center space-y-8 py-4">
+          {categoryLayouts.filter(layout => layout.isActive).map((layout, index) => {
             const category = categories.find(cat => cat.slug === layout.slug);
             if (!category) return null;
             
@@ -93,7 +93,7 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
               x: '50%',
               y: '0%',
               rotation: 0,
-              scale: 0.8
+              scale: 0.6
             };
             
             return (
@@ -121,12 +121,12 @@ const Home: React.FC<HomeProps> = ({ onCategorySelect }) => {
 
       {/* Footer */}
       <motion.div
-        className="relative text-center pb-8 z-50"
+        className="relative text-center pb-6 z-50"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 1.2 }}
       >
-        <div className="w-16 h-0.5 bg-cartier-red mx-auto mb-4"></div>
+        <div className="w-16 h-0.5 bg-cartier-red mx-auto mb-3"></div>
         <p className="text-cartier-black/40 font-serif text-xs uppercase tracking-wider">
           Ultra-minimal prompt exploration
         </p>
