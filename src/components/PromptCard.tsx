@@ -73,7 +73,7 @@ const PromptCard: React.FC<PromptCardProps> = ({ prompt, index, onCopy }) => {
       whileHover={{ y: -1 }}
     >
       {/* Copy button */}
-      <div className="absolute top-6 right-6">
+      <div className="absolute top-6 right-6 flex flex-col gap-2">
         <CopyToClipboard text={prompt.text} onCopy={handleCopy}>
           <button
             className="opacity-30 group-hover:opacity-100 transition-all duration-300 p-3 hover:bg-cartier-black/5 border border-transparent hover:border-cartier-black/10"
@@ -93,6 +93,27 @@ const PromptCard: React.FC<PromptCardProps> = ({ prompt, index, onCopy }) => {
             </svg>
           </button>
         </CopyToClipboard>
+        
+        {/* Open ChatGPT button */}
+        <button
+          onClick={() => window.open('https://chatgpt.com', '_blank')}
+          className="opacity-30 group-hover:opacity-100 transition-all duration-300 p-3 hover:bg-cartier-black/5 border border-transparent hover:border-cartier-black/10"
+          aria-label="Open ChatGPT in new tab"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="text-cartier-black hover:text-cartier-red transition-colors duration-300"
+          >
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" x2="21" y1="14" y2="3"/>
+          </svg>
+        </button>
       </div>
 
       {/* Prompt text */}

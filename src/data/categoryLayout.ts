@@ -9,48 +9,38 @@ export interface CategoryLayout {
   hoveredPath: string; // SVG path for hover state
   defaultColor: string;
   hoverColor: string;
-  spiralAngle: number; // angle in spiral
-  spiralRadius: number; // distance from center
   isActive: boolean; // whether category exists
 }
 
-// Generate spiral layout for Roman numerals I through XII
-const generateSpiralLayout = (): CategoryLayout[] => {
+// Generate two-row layout for Roman numerals I through XII
+const generateTwoRowLayout = (): CategoryLayout[] => {
   const layouts: CategoryLayout[] = [];
   const totalPositions = 12; // I through XII
   const activeCategories = ['self-awareness', 'decision-making', 'problem-solving', 'creativity', 'communication'];
   
   for (let i = 0; i < totalPositions; i++) {
-    const numeral = i + 1;
-    
-    // True spiral: angle increases more gradually, radius grows smoothly
-    const spiralTurns = 2.5; // How many full turns the spiral makes
-    const maxRadius = 35; // Maximum distance from center
-    const angleIncrement = (spiralTurns * 360) / totalPositions; // Degrees per step
-    const angle = i * angleIncrement - 90; // Start from top (12 o'clock)
-    const spiralRadius = (i / (totalPositions - 1)) * maxRadius; // Gradual radius increase
-    
-    // Convert polar to cartesian coordinates
-    const radians = (angle * Math.PI) / 180;
-    const x = 50 + (spiralRadius * Math.cos(radians));
-    const y = 50 + (spiralRadius * Math.sin(radians));
-    
     const isActive = i < activeCategories.length;
     const slug = isActive ? activeCategories[i] : `placeholder-${i}`;
     
+    // Two rows: I-VI on top row, VII-XII on bottom row
+    const isTopRow = i < 6;
+    const positionInRow = i % 6;
+    
+    // Horizontal positioning: 6 numerals per row with good spacing
+    const xPercent = 10 + (positionInRow * 13.5); // Start at 10%, each 13.5% apart
+    const yPercent = isTopRow ? '40%' : '60%'; // Top row at 40%, bottom at 60%
+    
     layouts.push({
       slug,
-      x: `${Math.max(5, Math.min(95, x))}%`,
-      y: `${Math.max(5, Math.min(95, y))}%`,
-      zIndex: isActive ? 10 - i : 1, // Inner elements have higher z-index
-      rotation: angle + 90 + (isActive ? (i % 2 === 0 ? -10 : 10) : 0), // Follow spiral direction
-      scale: isActive ? 1.2 - (i * 0.1) : 0.5, // Larger at center, smaller outward
+      x: `${xPercent}%`,
+      y: yPercent,
+      zIndex: isActive ? 5 + i : 1,
+      rotation: isActive ? (i % 2 === 0 ? -6 : 6) : 0, // Slight alternating tilt
+      scale: isActive ? 0.8 : 0.6, // Smaller to fit better
       defaultPath: '',
       hoveredPath: '',
       defaultColor: isActive ? '#0B0B0B' : '#D0D0D0',
       hoverColor: isActive ? '#B0121B' : '#A0A0A0',
-      spiralAngle: angle,
-      spiralRadius: spiralRadius,
       isActive
     });
   }
@@ -58,7 +48,7 @@ const generateSpiralLayout = (): CategoryLayout[] => {
   return layouts;
 };
 
-export const categoryLayouts: CategoryLayout[] = generateSpiralLayout();
+export const categoryLayouts: CategoryLayout[] = generateTwoRowLayout();
 
 // Roman numeral representations for positions I through XII
 export const romanNumerals = {

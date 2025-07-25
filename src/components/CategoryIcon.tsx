@@ -12,8 +12,8 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({ layout, title, onCategorySe
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
+    setShowTooltip(true);
     if (layout.isActive) {
-      setShowTooltip(true);
       setIsHovered(true);
     }
   };
@@ -31,31 +31,29 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({ layout, title, onCategorySe
 
   const numeral = romanNumerals[layout.slug as keyof typeof romanNumerals];
 
-  // Spiral + individual character distortion
-  const getSpiralWarpEffect = (layout: CategoryLayout, isHovered: boolean) => {
+  // Simple horizontal distortion based on position
+  const getHorizontalWarpEffect = (layout: CategoryLayout, isHovered: boolean) => {
     if (!layout.isActive) {
       return {
         transform: `
           scale(${layout.scale})
           rotate(${layout.rotation}deg)
           skewX(1deg)
-          skewY(0.5deg)
         `
       };
     }
 
-    // Spiral-based distortion: more distortion towards outer edge
-    const distanceFromCenter = layout.spiralRadius / 35; // Normalize to 0-1
-    const spiralProgress = Math.abs(layout.spiralAngle) / 360; // How far around the spiral
+    // Simple distortion effects for active items
+    const position = parseInt(layout.x.replace('%', ''));
+    const isEven = position % 2 === 0;
     
-    // Individual character distortion based on position in spiral
     const baseDistortion = {
-      scaleX: 1 + (distanceFromCenter * 0.3) - (spiralProgress * 0.1),
-      scaleY: 1 + (spiralProgress * 0.4) - (distanceFromCenter * 0.2),
-      skewX: (layout.spiralAngle / 8) + (distanceFromCenter * 20),
-      skewY: (Math.sin((layout.spiralAngle * Math.PI) / 180) * 8) + (distanceFromCenter * 5),
-      rotateX: distanceFromCenter * 10,
-      rotateY: (layout.spiralAngle / 15) + (spiralProgress * 5),
+      scaleX: isEven ? 1.1 : 0.9,
+      scaleY: isEven ? 0.9 : 1.2,
+      skewX: isEven ? -5 : 8,
+      skewY: isEven ? 3 : -4,
+      rotateX: isEven ? 5 : -8,
+      rotateY: isEven ? -3 : 6,
     };
 
     const hoverMultiplier = isHovered ? 1.4 : 1;
@@ -75,7 +73,7 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({ layout, title, onCategorySe
     };
   };
 
-  const warpEffect = getSpiralWarpEffect(layout, isHovered);
+  const warpEffect = getHorizontalWarpEffect(layout, isHovered);
 
   return (
     <div
@@ -140,19 +138,23 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({ layout, title, onCategorySe
         )}
       </div>
 
-      {/* Tooltip - only for active categories */}
-      {layout.isActive && (
-        <div
-          className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-4 transition-all duration-300 ${
-            showTooltip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
-          }`}
-        >
-          <span className="bg-cartier-black text-cartier-ivory px-4 py-2 text-sm font-sans uppercase tracking-widest whitespace-nowrap shadow-lg">
-            {title}
-          </span>
-          <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-cartier-black mx-auto transform -translate-y-1"></div>
-        </div>
-      )}
+      {/* Tooltip - for both active and inactive categories */}
+      <div
+        className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-4 transition-all duration-300 ${
+          showTooltip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
+        }`}
+      >
+        <span className={`px-4 py-2 text-sm font-sans uppercase tracking-widest whitespace-nowrap shadow-lg ${
+          layout.isActive 
+            ? 'bg-cartier-black text-cartier-ivory'
+            : 'bg-gray-400 text-white'
+        }`}>
+          {layout.isActive ? title : 'Coming Soon'}
+        </span>
+        <div className={`w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent mx-auto transform -translate-y-1 ${
+          layout.isActive ? 'border-b-cartier-black' : 'border-b-gray-400'
+        }`}></div>
+      </div>
     </div>
   );
 };
